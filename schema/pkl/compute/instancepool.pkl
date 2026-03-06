@@ -1,0 +1,49 @@
+/*
+ * © 2025 Platform Engineering Labs Inc.
+ *
+ * SPDX-License-Identifier: FSL-1.1-ALv2
+ */
+module databricks.compute.instancepool
+
+import "@formae/formae.pkl"
+import "../databricks.pkl"
+
+const type = "Databricks::Compute::InstancePool"
+
+open class InstancePoolResolvable extends formae.Resolvable {
+    hidden type = module.type
+    hidden instancePoolId: InstancePoolResolvable = (this) { property = "instancePoolId" }
+    hidden instancePoolName: InstancePoolResolvable = (this) { property = "instancePoolName" }
+}
+
+@databricks.ResourceHint {
+    type = module.type
+    identifier = "instancePoolId"
+}
+open class InstancePool extends formae.Resource {
+    fixed hidden type: String = module.type
+
+    @databricks.FieldHint { required = true }
+    instancePoolName: String
+
+    @databricks.FieldHint { required = true; createOnly = true }
+    nodeTypeId: String
+
+    @databricks.FieldHint {}
+    minIdleInstances: Int?
+
+    @databricks.FieldHint {}
+    maxCapacity: Int?
+
+    @databricks.FieldHint {}
+    idleInstanceAutoterminationMinutes: Int?
+
+    @databricks.FieldHint {}
+    preloadedSparkVersions: Listing<String>?
+
+    hidden parent = this
+    hidden res: InstancePoolResolvable = new {
+        label = parent.label
+        stack = parent.stack?.label
+    }
+}

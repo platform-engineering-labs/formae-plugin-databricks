@@ -1,0 +1,35 @@
+/*
+ * © 2025 Platform Engineering Labs Inc.
+ *
+ * SPDX-License-Identifier: FSL-1.1-ALv2
+ */
+module databricks
+
+import "@formae/formae.pkl"
+
+/// Databricks workspace configuration.
+/// Host is required — each workspace has its own URL.
+/// Token is optional — the SDK's default credential chain (CLI profile,
+/// Azure CLI, env vars, etc.) handles auth when not specified.
+open class Config {
+  hidden fixed type: String = "Databricks"
+  hidden host: String
+  hidden token: String?
+
+  fixed Type: String = type
+  fixed Host: String = host
+  fixed Token: String? = token
+}
+
+open class ResourceHint extends formae.ResourceHint {}
+
+open class FieldHint extends formae.FieldHint {}
+
+/// Tag for resource identification and organization.
+open class Tag {
+  hidden key: String
+  hidden value: String
+
+  fixed Key: String = key
+  fixed Value: String = value
+}

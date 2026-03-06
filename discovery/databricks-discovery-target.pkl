@@ -1,0 +1,17 @@
+/*
+ * © 2025 Platform Engineering Labs Inc.
+ *
+ * SPDX-License-Identifier: FSL-1.1-ALv2
+ */
+
+amends "@formae/formae.pkl"
+import "@databricks/databricks.pkl"
+
+// Discovery target for Databricks workspace.
+// Add to your formae config to enable automatic resource discovery.
+new Target {
+  label = "databricks-workspace"
+  config = new databricks.Config {
+    host = read("env:DATABRICKS_HOST")
+  }
+}

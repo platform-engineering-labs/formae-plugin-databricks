@@ -1,0 +1,42 @@
+/*
+ * © 2025 Platform Engineering Labs Inc.
+ *
+ * SPDX-License-Identifier: FSL-1.1-ALv2
+ */
+
+amends "@formae/forma.pkl"
+import "@formae/formae.pkl"
+
+import "@databricks/databricks.pkl"
+import "@databricks/jobs/job.pkl"
+
+local stackName = "plugin-sdk-test-job-stack"
+local testRunID = read("env:FORMAE_TEST_RUN_ID")
+
+forma {
+  new formae.Stack {
+    label = stackName
+    description = "Plugin SDK test for Databricks Job"
+  }
+
+  new formae.Target {
+    label = "databricks-target"
+    config = new databricks.Config {
+      host = read("env:DATABRICKS_HOST")
+    }
+  }
+
+  new job.Job {
+    label = "plugin-sdk-test-job"
+    name = "formae-plugin-sdk-test-\(testRunID)-updated"    // CHANGED
+    maxConcurrentRuns = 2                                    // CHANGED from 1
+    tasks = new Listing {
+      new job.TaskDefinition {
+        taskKey = "test-task"
+        notebookTask = new job.NotebookTask {
+          notebookPath = "/tmp/formae-conformance-test"
+        }
+      }
+    }
+  }
+}

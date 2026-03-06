@@ -1,0 +1,41 @@
+/*
+ * © 2025 Platform Engineering Labs Inc.
+ *
+ * SPDX-License-Identifier: FSL-1.1-ALv2
+ */
+
+amends "@formae/forma.pkl"
+import "@formae/formae.pkl"
+
+import "@databricks/databricks.pkl"
+import "@databricks/compute/cluster.pkl"
+
+local stackName = "plugin-sdk-test-cluster-stack"
+local testRunID = read("env:FORMAE_TEST_RUN_ID")
+
+forma {
+  new formae.Stack {
+    label = stackName
+    description = "Plugin SDK test for Databricks Cluster"
+  }
+
+  new formae.Target {
+    label = "databricks-target"
+    config = new databricks.Config {
+      host = read("env:DATABRICKS_HOST")
+    }
+  }
+
+  new cluster.Cluster {
+    label = "plugin-sdk-test-cluster"
+    clusterName = "formae-plugin-sdk-test-\(testRunID)"
+    sparkVersion = "15.4.x-scala2.12"
+    nodeTypeId = "i3.xlarge"
+    numWorkers = 1
+    autoterminationMinutes = 10
+    dataSecurityMode = "SINGLE_USER"
+    customTags = new Mapping {
+      ["Environment"] = "test"
+    }
+  }
+}

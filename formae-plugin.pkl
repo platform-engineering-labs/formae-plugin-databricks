@@ -1,0 +1,16 @@
+/*
+ * © 2025 Platform Engineering Labs Inc.
+ *
+ * SPDX-License-Identifier: FSL-1.1-ALv2
+ */
+
+name = "databricks"
+version = "0.1.0"
+namespace = "DATABRICKS"
+description = "Databricks workspace resource plugin for Formae"
+license = "FSL-1.1-ALv2"
+minFormaeVersion = "0.80.1"
+
+output {
+  renderer = new JsonRenderer {}
+}
