@@ -121,7 +121,7 @@ jobs:
           pkl-version: ${{ env.PKL_VERSION }}
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           aws-region: us-east-2
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
@@ -160,7 +160,7 @@ jobs:
           pkl-version: ${{ env.PKL_VERSION }}
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           aws-region: us-east-2
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
