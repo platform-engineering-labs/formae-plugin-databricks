@@ -1,0 +1,32 @@
+---
+description: Databricks plugin for Formae. Use when working on the formae-plugin-databricks repo.
+---
+
+# Databricks Plugin for Formae
+
+## Overview
+This is a formae resource plugin for Databricks workspace management. It uses the Databricks Go SDK (`github.com/databricks/databricks-sdk-go`) and follows the same registry-based provisioner pattern as the Azure plugin.
+
+## Resources
+- `Databricks::Compute::InstancePool` — sync CRUD, string NativeID (`InstancePoolId`)
+- `Databricks::Compute::Cluster` — async create/update (poll via `Clusters.Get` + State), sync delete
+- `Databricks::Jobs::Job` — sync CRUD, int64→string NativeID conversion
+
+## Key Architecture
+- `databricks.go` — Plugin struct delegates all CRUD to registry-based provisioners
+- `pkg/registry/` — Factory map: `Register(type, factory)`, `Get(type, client, config)`
+- `pkg/prov/` — Provisioner interface (6 methods: Create/Read/Update/Delete/Status/List)
+- `pkg/client/` — Thin wrapper around `databricks.WorkspaceClient`
+- `pkg/config/` — Extracts Host+Token from target config JSON, falls back to env vars
+- `pkg/resources/` — One file per resource type, each calls `registry.Register` in `init()`
+
+## Build & Test
+```bash
+make build          # builds to bin/databricks
+make install        # installs to ~/.pel/formae/plugins/databricks/v0.1.0/
+make conformance-test  # runs CRUD + discovery conformance tests
+make clean-environment # cleanup test resources via databricks CLI
+```
+
+## Auth
+PAT token auth via `DATABRICKS_HOST` and `DATABRICKS_TOKEN` env vars, or target config JSON.

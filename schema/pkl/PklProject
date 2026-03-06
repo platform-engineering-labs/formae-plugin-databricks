@@ -1,0 +1,14 @@
+amends "pkl:Project"
+
+package {
+  name = "databricks"
+  baseUri = "package://localhost/plugins/databricks/schema/pkl/databricks"
+  version = "0.1.0"
+  packageZipUrl = "https://localhost/plugins/databricks/schema/pkl/databricks@\(version).zip"
+}
+
+dependencies {
+  ["formae"] {
+    uri = "package://hub.platform.engineering/plugins/pkl/schema/pkl/formae/formae@0.82.3"
+  }
+}

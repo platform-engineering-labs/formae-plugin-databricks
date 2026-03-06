@@ -1,0 +1,70 @@
+/*
+ * © 2025 Platform Engineering Labs Inc.
+ *
+ * SPDX-License-Identifier: FSL-1.1-ALv2
+ */
+module databricks.compute.cluster
+
+import "@formae/formae.pkl"
+import "../databricks.pkl"
+
+const type = "Databricks::Compute::Cluster"
+
+open class ClusterResolvable extends formae.Resolvable {
+    hidden type = module.type
+    hidden clusterId: ClusterResolvable = (this) { property = "clusterId" }
+    hidden clusterName: ClusterResolvable = (this) { property = "clusterName" }
+}
+
+@formae.SubResourceHint {}
+class AutoScale extends formae.SubResource {
+    @databricks.FieldHint { required = true }
+    minWorkers: Int
+
+    @databricks.FieldHint { required = true }
+    maxWorkers: Int
+}
+
+@databricks.ResourceHint {
+    type = module.type
+    identifier = "clusterId"
+}
+open class Cluster extends formae.Resource {
+    fixed hidden type: String = module.type
+
+    @databricks.FieldHint { required = true }
+    clusterName: String
+
+    @databricks.FieldHint { required = true }
+    sparkVersion: String
+
+    @databricks.FieldHint {}
+    nodeTypeId: String?
+
+    @databricks.FieldHint {}
+    instancePoolId: (String|formae.Resolvable)?
+
+    @databricks.FieldHint {}
+    numWorkers: Int?
+
+    @databricks.FieldHint {}
+    autoscale: AutoScale?
+
+    @databricks.FieldHint {}
+    autoterminationMinutes: Int?
+
+    @databricks.FieldHint {}
+    dataSecurityMode: ("SINGLE_USER"|"USER_ISOLATION"|"DATA_SECURITY_MODE_AUTO"|"DATA_SECURITY_MODE_STANDARD"|"DATA_SECURITY_MODE_DEDICATED")?
+
+    @databricks.FieldHint {}
+    sparkConf: Mapping<String, String>?
+
+    @databricks.FieldHint {}
+    customTags: Mapping<String, String>?
+
+    hidden parent = this
+    hidden res: ClusterResolvable = new {
+        label = parent.label
+        stack = parent.stack?.label
+    }
+}

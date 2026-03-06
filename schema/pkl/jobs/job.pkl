@@ -1,0 +1,82 @@
+/*
+ * © 2025 Platform Engineering Labs Inc.
+ *
+ * SPDX-License-Identifier: FSL-1.1-ALv2
+ */
+module databricks.jobs.job
+
+import "@formae/formae.pkl"
+import "../databricks.pkl"
+
+const type = "Databricks::Jobs::Job"
+
+open class JobResolvable extends formae.Resolvable {
+    hidden type = module.type
+    hidden jobId: JobResolvable = (this) { property = "jobId" }
+    hidden name: JobResolvable = (this) { property = "name" }
+}
+
+@formae.SubResourceHint {}
+class NotebookTask extends formae.SubResource {
+    @databricks.FieldHint { required = true }
+    notebookPath: String
+
+    @databricks.FieldHint {}
+    baseParameters: Mapping<String, String>?
+}
+
+@formae.SubResourceHint {}
+class TaskDefinition extends formae.SubResource {
+    @databricks.FieldHint { required = true }
+    taskKey: String
+
+    @databricks.FieldHint {}
+    description: String?
+
+    @databricks.FieldHint {}
+    existingClusterId: (String|formae.Resolvable)?
+
+    @databricks.FieldHint {}
+    notebookTask: NotebookTask?
+}
+
+@formae.SubResourceHint {}
+class CronSchedule extends formae.SubResource {
+    @databricks.FieldHint { required = true }
+    quartzCronExpression: String
+
+    @databricks.FieldHint { required = true }
+    timezoneId: String
+
+    @databricks.FieldHint {}
+    pauseStatus: String?
+}
+
+@databricks.ResourceHint {
+    type = module.type
+    identifier = "jobId"
+}
+open class Job extends formae.Resource {
+    fixed hidden type: String = module.type
+
+    @databricks.FieldHint { required = true }
+    name: String
+
+    @databricks.FieldHint {}
+    tasks: Listing<TaskDefinition>?
+
+    @databricks.FieldHint {}
+    schedule: CronSchedule?
+
+    @databricks.FieldHint {}
+    maxConcurrentRuns: Int?
+
+    @databricks.FieldHint {}
+    tags: Mapping<String, String>?
+
+    hidden parent = this
+    hidden res: JobResolvable = new {
+        label = parent.label
+        stack = parent.stack?.label
+    }
+}

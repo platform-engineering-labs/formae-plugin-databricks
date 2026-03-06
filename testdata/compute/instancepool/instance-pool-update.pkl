@@ -1,0 +1,37 @@
+/*
+ * © 2025 Platform Engineering Labs Inc.
+ *
+ * SPDX-License-Identifier: FSL-1.1-ALv2
+ */
+
+amends "@formae/forma.pkl"
+import "@formae/formae.pkl"
+
+import "@databricks/databricks.pkl"
+import "@databricks/compute/instancepool.pkl"
+
+local stackName = "plugin-sdk-test-pool-stack"
+local testRunID = read("env:FORMAE_TEST_RUN_ID")
+
+forma {
+  new formae.Stack {
+    label = stackName
+    description = "Plugin SDK test for Databricks Instance Pool"
+  }
+
+  new formae.Target {
+    label = "databricks-target"
+    config = new databricks.Config {
+      host = read("env:DATABRICKS_HOST")
+    }
+  }
+
+  new instancepool.InstancePool {
+    label = "plugin-sdk-test-pool"
+    instancePoolName = "formae-plugin-sdk-test-\(testRunID)-updated"   // CHANGED
+    nodeTypeId = "i3.xlarge"                                     // unchanged (createOnly)
+    minIdleInstances = 0
+    maxCapacity = 4                                                    // CHANGED from 2
+    idleInstanceAutoterminationMinutes = 15                            // CHANGED from 10
+  }
+}

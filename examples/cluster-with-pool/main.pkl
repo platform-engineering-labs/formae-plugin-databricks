@@ -1,0 +1,77 @@
+/*
+ * © 2025 Platform Engineering Labs Inc.
+ *
+ * SPDX-License-Identifier: FSL-1.1-ALv2
+ */
+
+amends "@formae/forma.pkl"
+import "@formae/formae.pkl"
+
+import "@databricks/databricks.pkl"
+import "@databricks/compute/instancepool.pkl"
+import "@databricks/compute/cluster.pkl"
+import "@databricks/jobs/job.pkl"
+
+local stackName = "cluster-with-pool"
+
+forma {
+  new formae.Stack {
+    label = stackName
+    description = "Databricks cluster with instance pool and job"
+  }
+
+  new formae.Target {
+    label = "databricks-cluster-target"
+    config = new databricks.Config {
+      host = read("env:DATABRICKS_HOST")
+    }
+  }
+
+  pool
+  analyticsCluster
+  etlJob
+}
+
+local pool = new instancepool.InstancePool {
+  label = "shared-pool"
+  instancePoolName = "shared-compute-pool"
+  nodeTypeId = "i3.xlarge"
+  minIdleInstances = 1
+  maxCapacity = 10
+  idleInstanceAutoterminationMinutes = 30
+}
+
+local analyticsCluster = new cluster.Cluster {
+  label = "analytics-cluster"
+  clusterName = "analytics"
+  sparkVersion = "15.4.x-scala2.12"
+  instancePoolId = pool.res.instancePoolId
+  numWorkers = 2
+  autoterminationMinutes = 60
+  dataSecurityMode = "SINGLE_USER"
+  sparkConf = new Mapping {
+    ["spark.databricks.delta.preview.enabled"] = "true"
+  }
+  customTags = new Mapping {
+    ["Team"] = "analytics"
+  }
+}
+
+local etlJob = new job.Job {
+  label = "etl-job"
+  name = "daily-etl"
+  maxConcurrentRuns = 1
+  schedule = new job.CronSchedule {
+    quartzCronExpression = "0 0 8 * * ?"
+    timezoneId = "UTC"
+  }
+  tasks = new Listing {
+    new job.TaskDefinition {
+      taskKey = "extract"
+      existingClusterId = analyticsCluster.res.clusterId
+      notebookTask = new job.NotebookTask {
+        notebookPath = "/Repos/etl/extract"
+      }
+    }
+  }
+}
