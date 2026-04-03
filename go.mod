@@ -5,7 +5,7 @@ go 1.25
 require (
 	github.com/databricks/databricks-sdk-go v0.118.0
 	github.com/platform-engineering-labs/formae/pkg/plugin v0.1.14
-	github.com/platform-engineering-labs/formae/pkg/plugin-conformance-tests v0.1.21
+	github.com/platform-engineering-labs/formae/pkg/plugin-conformance-tests v0.1.41
 	github.com/stretchr/testify v1.11.1
 )
 
@@ -35,7 +35,7 @@ require (
 	github.com/masterminds/semver v1.5.0 // indirect
 	github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c // indirect
 	github.com/platform-engineering-labs/formae/pkg/api/model v0.1.1 // indirect
-	github.com/platform-engineering-labs/formae/pkg/model v0.1.5 // indirect
+	github.com/platform-engineering-labs/formae/pkg/model v0.1.6 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/power-devops/perfstat v0.0.0-20240221224432-82ca36839d55 // indirect
 	github.com/shirou/gopsutil/v4 v4.26.1 // indirect
