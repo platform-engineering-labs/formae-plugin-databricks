@@ -4,8 +4,8 @@ go 1.25
 
 require (
 	github.com/databricks/databricks-sdk-go v0.118.0
-	github.com/platform-engineering-labs/formae/pkg/plugin v0.1.21-0.20260407134926-6e0e901477de
-	github.com/platform-engineering-labs/formae/pkg/plugin-conformance-tests v0.1.21
+	github.com/platform-engineering-labs/formae/pkg/plugin v0.1.22
+	github.com/platform-engineering-labs/formae/pkg/plugin-conformance-tests v0.1.42
 	github.com/stretchr/testify v1.11.1
 )
 
