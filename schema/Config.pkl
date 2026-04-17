@@ -1,0 +1,14 @@
+/*
+ * © 2025 Platform Engineering Labs Inc.
+ *
+ * SPDX-License-Identifier: FSL-1.1-ALv2
+ */
+
+/// Databricks plugin configuration.
+open module databricks.Config
+
+extends "formae:/Config.pkl"
+
+class PluginConfig extends BaseResourcePluginConfig {
+    type = "databricks"
+}
