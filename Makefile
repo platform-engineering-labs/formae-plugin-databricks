@@ -14,7 +14,7 @@ BINARY := $(PLUGIN_NAME)
 PLUGIN_BASE_DIR := $(HOME)/.pel/formae/plugins
 INSTALL_DIR := $(PLUGIN_BASE_DIR)/$(PLUGIN_NAME)/v$(PLUGIN_VERSION)
 
-.PHONY: all build test test-unit test-integration lint verify-schema gen-pkl clean install help clean-environment conformance-test conformance-test-crud conformance-test-discovery
+.PHONY: all build test test-unit test-integration lint verify-schema gen-pkl clean install help clean-environment conformance-test conformance-test-crud conformance-test-discovery conformance-test-crud-run conformance-test-discovery-run
 
 all: build
 
@@ -79,33 +79,61 @@ clean-environment:
 	@./scripts/ci/clean-environment.sh
 
 ## conformance-test: Run all conformance tests (CRUD + discovery)
-## Usage: make conformance-test [VERSION=0.82.3] [TEST=instance-pool] [TIMEOUT=15]
-conformance-test: conformance-test-crud conformance-test-discovery
+## Usage: make conformance-test [TEST=instance-pool] [PARALLEL=1] [TIMEOUT=60]
+## Calls clean-environment before and after tests.
+##
+## Parameters:
+##   TEST     - Filter tests by name pattern (e.g., TEST=instance-pool)
+##   PARALLEL - Concurrent tests inside the SDK (default: 1 = sequential)
+##   TIMEOUT  - Test timeout in minutes (default: 60)
+##
+## The conformance SDK installs the latest released formae via orbital
+## unless FORMAE_BINARY is set (e.g. by nightly which builds from source).
+conformance-test: install
+	@echo "Pre-test cleanup..."
+	@./scripts/ci/clean-environment.sh || true
+	@echo ""
+	@$(MAKE) conformance-test-crud-run conformance-test-discovery-run TEST=$(TEST) PARALLEL=$(PARALLEL) TIMEOUT=$(TIMEOUT); \
+	TEST_EXIT=$$?; \
+	echo ""; \
+	echo "Post-test cleanup..."; \
+	./scripts/ci/clean-environment.sh || true; \
+	exit $$TEST_EXIT
 
-## conformance-test-crud: Run only CRUD lifecycle tests
-## Usage: make conformance-test-crud [VERSION=0.82.3] [TEST=instance-pool] [TIMEOUT=15]
+## conformance-test-crud: Run CRUD tests with cleanup (convenience for local dev)
 conformance-test-crud: install
 	@echo "Pre-test cleanup..."
 	@./scripts/ci/clean-environment.sh || true
 	@echo ""
-	@echo "Running CRUD conformance tests..."
-	@FORMAE_TEST_FILTER="$(TEST)" FORMAE_TEST_TYPE=crud FORMAE_TEST_TIMEOUT="$(TIMEOUT)" ./scripts/run-conformance-tests.sh $(VERSION); \
+	@$(MAKE) conformance-test-crud-run TEST=$(TEST) PARALLEL=$(PARALLEL) TIMEOUT=$(TIMEOUT); \
 	TEST_EXIT=$$?; \
 	echo ""; \
 	echo "Post-test cleanup..."; \
 	./scripts/ci/clean-environment.sh || true; \
 	exit $$TEST_EXIT
 
-## conformance-test-discovery: Run only discovery tests
-## Usage: make conformance-test-discovery [VERSION=0.82.3] [TEST=instance-pool] [TIMEOUT=15]
+## conformance-test-discovery: Run discovery tests with cleanup (convenience for local dev)
 conformance-test-discovery: install
 	@echo "Pre-test cleanup..."
 	@./scripts/ci/clean-environment.sh || true
 	@echo ""
-	@echo "Running discovery conformance tests..."
-	@FORMAE_TEST_FILTER="$(TEST)" FORMAE_TEST_TYPE=discovery FORMAE_TEST_TIMEOUT="$(TIMEOUT)" ./scripts/run-conformance-tests.sh $(VERSION); \
+	@$(MAKE) conformance-test-discovery-run TEST=$(TEST) PARALLEL=$(PARALLEL) TIMEOUT=$(TIMEOUT); \
 	TEST_EXIT=$$?; \
 	echo ""; \
 	echo "Post-test cleanup..."; \
 	./scripts/ci/clean-environment.sh || true; \
 	exit $$TEST_EXIT
+
+## conformance-test-crud-run: Run only CRUD lifecycle tests (no cleanup)
+## Used by CI matrix jobs where cleanup is managed separately.
+conformance-test-crud-run:
+	@echo "Running CRUD conformance tests..."
+	@FORMAE_TEST_FILTER="$(TEST)" FORMAE_TEST_TYPE=crud FORMAE_TEST_PARALLEL="$(PARALLEL)" \
+		$(GO) test -tags=conformance -v -timeout $(or $(TIMEOUT),60)m ./...
+
+## conformance-test-discovery-run: Run only discovery tests (no cleanup)
+## Used by CI matrix jobs where cleanup is managed separately.
+conformance-test-discovery-run:
+	@echo "Running discovery conformance tests..."
+	@FORMAE_TEST_FILTER="$(TEST)" FORMAE_TEST_TYPE=discovery FORMAE_TEST_PARALLEL="$(PARALLEL)" \
+		$(GO) test -tags=conformance -v -timeout $(or $(TIMEOUT),60)m ./...
