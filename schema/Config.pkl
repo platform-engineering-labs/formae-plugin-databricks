@@ -11,4 +11,11 @@ extends "formae:/Config.pkl"
 
 class PluginConfig extends BaseResourcePluginConfig {
     type = "databricks"
+
+    // Databricks cluster create can take 5-8 min; bump from the 20s default so
+    // formae's `creating`-state timeout (statusCheckInterval * 2) doesn't fire
+    // before the plugin's first Status() poll returns through IPC.
+    retry = new RetryConfig {
+        statusCheckInterval = 60.s
+    }
 }
