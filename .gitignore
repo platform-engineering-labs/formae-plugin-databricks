@@ -32,3 +32,9 @@ PklProject.deps.json
 # Claude Code
 CLAUDE.md
 .claude/
+
+# Local secrets
+.env
+
+# Session handoffs
+.handoffs/
