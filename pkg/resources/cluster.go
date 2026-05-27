@@ -37,7 +37,7 @@ type clusterProps struct {
 	NodeTypeId             string            `json:"nodeTypeId,omitempty"`
 	InstancePoolId         string            `json:"instancePoolId,omitempty"`
 	NumWorkers             *int              `json:"numWorkers,omitempty"`
-	Autoscale              *autoscaleProps    `json:"autoscale,omitempty"`
+	Autoscale              *autoscaleProps   `json:"autoscale,omitempty"`
 	AutoterminationMinutes *int              `json:"autoterminationMinutes,omitempty"`
 	DataSecurityMode       string            `json:"dataSecurityMode,omitempty"`
 	SparkConf              map[string]string `json:"sparkConf,omitempty"`
@@ -112,9 +112,13 @@ func (cl *Cluster) Create(ctx context.Context, request *resource.CreateRequest) 
 func (cl *Cluster) Read(ctx context.Context, request *resource.ReadRequest) (*resource.ReadResult, error) {
 	propsJSON, err := cl.readByID(ctx, request.NativeID)
 	if err != nil {
-		return &resource.ReadResult{
-			ErrorCode: mapDatabricksError(err),
-		}, fmt.Errorf("failed to read cluster: %w", err)
+		if code := mapDatabricksError(err); code == resource.OperationErrorCodeNotFound {
+			return &resource.ReadResult{
+				ResourceType: ResourceTypeCluster,
+				ErrorCode:    code,
+			}, nil
+		}
+		return nil, fmt.Errorf("failed to read cluster: %w", err)
 	}
 
 	return &resource.ReadResult{

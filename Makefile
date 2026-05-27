@@ -1,5 +1,10 @@
 # Formae Databricks Plugin Makefile
 
+# Auto-load local .env for integration / conformance tests.
+# Leading `-` keeps make silent when .env is absent (e.g., in CI).
+-include .env
+export
+
 # Plugin metadata - extracted from formae-plugin.pkl
 PLUGIN_NAME := $(shell pkl eval -x 'name' formae-plugin.pkl 2>/dev/null || echo "databricks")
 PLUGIN_VERSION := $(shell pkl eval -x 'version' formae-plugin.pkl 2>/dev/null || echo "0.1.0")

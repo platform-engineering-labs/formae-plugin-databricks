@@ -31,23 +31,23 @@ type Job struct {
 }
 
 type jobProps struct {
-	JobId             *int64              `json:"jobId,omitempty"`
-	Name              string              `json:"name"`
-	Tasks             []jobTask           `json:"tasks,omitempty"`
-	Schedule          *jobSchedule        `json:"schedule,omitempty"`
-	MaxConcurrentRuns *int                `json:"maxConcurrentRuns,omitempty"`
-	Tags              map[string]string   `json:"tags,omitempty"`
+	JobId             *int64            `json:"jobId,omitempty"`
+	Name              string            `json:"name"`
+	Tasks             []jobTask         `json:"tasks,omitempty"`
+	Schedule          *jobSchedule      `json:"schedule,omitempty"`
+	MaxConcurrentRuns *int              `json:"maxConcurrentRuns,omitempty"`
+	Tags              map[string]string `json:"tags,omitempty"`
 }
 
 type jobTask struct {
-	TaskKey           string       `json:"taskKey"`
-	Description       string       `json:"description,omitempty"`
-	ExistingClusterId string       `json:"existingClusterId,omitempty"`
+	TaskKey           string        `json:"taskKey"`
+	Description       string        `json:"description,omitempty"`
+	ExistingClusterId string        `json:"existingClusterId,omitempty"`
 	NotebookTask      *notebookTask `json:"notebookTask,omitempty"`
 }
 
 type notebookTask struct {
-	NotebookPath string            `json:"notebookPath"`
+	NotebookPath   string            `json:"notebookPath"`
 	BaseParameters map[string]string `json:"baseParameters,omitempty"`
 }
 
@@ -114,9 +114,13 @@ func (j *Job) Read(ctx context.Context, request *resource.ReadRequest) (*resourc
 
 	propsJSON, err := j.readByID(ctx, jobID)
 	if err != nil {
-		return &resource.ReadResult{
-			ErrorCode: mapDatabricksError(err),
-		}, fmt.Errorf("failed to read job: %w", err)
+		if code := mapDatabricksError(err); code == resource.OperationErrorCodeNotFound {
+			return &resource.ReadResult{
+				ResourceType: ResourceTypeJob,
+				ErrorCode:    code,
+			}, nil
+		}
+		return nil, fmt.Errorf("failed to read job: %w", err)
 	}
 
 	return &resource.ReadResult{
