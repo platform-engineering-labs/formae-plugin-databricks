@@ -4,9 +4,9 @@
 
 | Resource | Type | Status | Async |
 |---|---|---|---|
-| Instance Pool | `Databricks::Compute::InstancePool` | Implemented | No |
-| Job | `Databricks::Jobs::Job` | Implemented | No |
-| Cluster | `Databricks::Compute::Cluster` | Implemented | Create/Update async |
+| Instance Pool | `DATABRICKS::Compute::InstancePool` | Implemented | No |
+| Job | `DATABRICKS::Jobs::Job` | Implemented | No |
+| Cluster | `DATABRICKS::Compute::Cluster` | Implemented | Create/Update async |
 
 ## Authentication
 

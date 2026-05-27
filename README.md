@@ -9,9 +9,9 @@ Formae plugin for managing Databricks workspace resources.
 
 | Resource Type | Description | Async |
 |---------------|-------------|-------|
-| `Databricks::Compute::InstancePool` | Instance pools | No |
-| `Databricks::Compute::Cluster` | All-purpose clusters | Create/Update |
-| `Databricks::Jobs::Job` | Workflow jobs | No |
+| `DATABRICKS::Compute::InstancePool` | Instance pools | No |
+| `DATABRICKS::Compute::Cluster` | All-purpose clusters | Create/Update |
+| `DATABRICKS::Jobs::Job` | Workflow jobs | No |
 
 ## Installation
 

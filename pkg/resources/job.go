@@ -18,7 +18,7 @@ import (
 	"github.com/platform-engineering-labs/formae/pkg/plugin/resource"
 )
 
-const ResourceTypeJob = "Databricks::Jobs::Job"
+const ResourceTypeJob = "DATABRICKS::Jobs::Job"
 
 func init() {
 	registry.Register(ResourceTypeJob, func(c *client.Client, cfg *config.Config) prov.Provisioner {

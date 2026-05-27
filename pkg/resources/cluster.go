@@ -18,7 +18,7 @@ import (
 	"github.com/platform-engineering-labs/formae/pkg/plugin/resource"
 )
 
-const ResourceTypeCluster = "Databricks::Compute::Cluster"
+const ResourceTypeCluster = "DATABRICKS::Compute::Cluster"
 
 func init() {
 	registry.Register(ResourceTypeCluster, func(c *client.Client, cfg *config.Config) prov.Provisioner {
