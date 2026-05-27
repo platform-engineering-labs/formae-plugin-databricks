@@ -200,21 +200,24 @@ jobs:
       - name: Install Databricks CLI
         run: curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
 
-      - name: Clean up test resources
+      - name: Clean up test resources (best-effort)
+        continue-on-error: true
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_CLIENT_ID: ${{ secrets.DATABRICKS_CLIENT_ID }}
           DATABRICKS_TOKEN_AUDIENCE: 22793048-f5a8-417b-b056-e9c4aabbb05d
           DATABRICKS_AUTH_TYPE: github-oidc
         run: |
-          # Conformance tests self-clean via t.Cleanup; this is the orphan safety net.
-          # If CLI auth fails here, surface diagnostics but don't fail the workflow.
-          if databricks current-user me >/dev/null 2>&1; then
-            ./scripts/ci/clean-environment.sh
-          else
-            echo "::warning::Databricks CLI auth failed in cleanup job; conformance tests self-clean via t.Cleanup."
-            databricks current-user me 2>&1 | head -10 || true
-          fi
+          # Conformance tests self-clean via t.Cleanup; this job is the orphan safety net.
+          # Step is best-effort (continue-on-error) so a CLI quirk doesn't fail the workflow.
+          echo "=== auth probe ==="
+          databricks current-user me 2>&1 | head -5 || true
+          echo ""
+          echo "=== jobs list probe (no 2>/dev/null) ==="
+          databricks jobs list --output json 2>&1 | head -10 || true
+          echo ""
+          echo "=== running clean-environment.sh ==="
+          ./scripts/ci/clean-environment.sh
 
   # Notify when nightly is fixed (was red, now green)
   notify-fixed:
