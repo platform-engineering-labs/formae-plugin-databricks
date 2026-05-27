@@ -92,9 +92,13 @@ func (ip *InstancePool) Create(ctx context.Context, request *resource.CreateRequ
 func (ip *InstancePool) Read(ctx context.Context, request *resource.ReadRequest) (*resource.ReadResult, error) {
 	propsJSON, err := ip.readByID(ctx, request.NativeID)
 	if err != nil {
-		return &resource.ReadResult{
-			ErrorCode: mapDatabricksError(err),
-		}, fmt.Errorf("failed to read instance pool: %w", err)
+		if code := mapDatabricksError(err); code == resource.OperationErrorCodeNotFound {
+			return &resource.ReadResult{
+				ResourceType: ResourceTypeInstancePool,
+				ErrorCode:    code,
+			}, nil
+		}
+		return nil, fmt.Errorf("failed to read instance pool: %w", err)
 	}
 
 	return &resource.ReadResult{
