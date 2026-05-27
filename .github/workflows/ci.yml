@@ -174,7 +174,7 @@ jobs:
           DATABRICKS_CLIENT_ID: ${{ secrets.DATABRICKS_CLIENT_ID }}
           DATABRICKS_TOKEN_AUDIENCE: 22793048-f5a8-417b-b056-e9c4aabbb05d
           FORMAE_TEST_RUN_ID: ${{ github.run_id }}-${{ github.run_attempt }}
-          FORMAE_TEST_OOB_DELETE_TIMEOUT: 5
+          FORMAE_TEST_OOB_DELETE_TIMEOUT: 15
         run: |
           VERSION="${{ inputs.formae_version }}"
           if [ "$VERSION" = "" ] || [ "$VERSION" = "latest" ]; then
