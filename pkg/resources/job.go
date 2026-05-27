@@ -90,18 +90,12 @@ func (j *Job) Create(ctx context.Context, request *resource.CreateRequest) (*res
 		}, fmt.Errorf("failed to create job: %w", err)
 	}
 
-	nativeID := int64ToNativeID(resp.JobId)
-	propsJSON, err := j.readByID(ctx, resp.JobId)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read after create: %w", err)
-	}
-
+	// ResourceProperties filled by the readAfterWrite decorator registered on Get().
 	return &resource.CreateResult{
 		ProgressResult: &resource.ProgressResult{
-			Operation:          resource.OperationCreate,
-			OperationStatus:    resource.OperationStatusSuccess,
-			NativeID:           nativeID,
-			ResourceProperties: propsJSON,
+			Operation:       resource.OperationCreate,
+			OperationStatus: resource.OperationStatusSuccess,
+			NativeID:        int64ToNativeID(resp.JobId),
 		},
 	}, nil
 }
@@ -170,17 +164,12 @@ func (j *Job) Update(ctx context.Context, request *resource.UpdateRequest) (*res
 		}, fmt.Errorf("failed to update job: %w", err)
 	}
 
-	propsJSON, err := j.readByID(ctx, jobID)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read after update: %w", err)
-	}
-
+	// ResourceProperties filled by the readAfterWrite decorator registered on Get().
 	return &resource.UpdateResult{
 		ProgressResult: &resource.ProgressResult{
-			Operation:          resource.OperationUpdate,
-			OperationStatus:    resource.OperationStatusSuccess,
-			NativeID:           request.NativeID,
-			ResourceProperties: propsJSON,
+			Operation:       resource.OperationUpdate,
+			OperationStatus: resource.OperationStatusSuccess,
+			NativeID:        request.NativeID,
 		},
 	}, nil
 }
