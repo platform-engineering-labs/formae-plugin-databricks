@@ -18,7 +18,7 @@ import (
 	"github.com/platform-engineering-labs/formae/pkg/plugin/resource"
 )
 
-const ResourceTypeInstancePool = "Databricks::Compute::InstancePool"
+const ResourceTypeInstancePool = "DATABRICKS::Compute::InstancePool"
 
 func init() {
 	registry.Register(ResourceTypeInstancePool, func(c *client.Client, cfg *config.Config) prov.Provisioner {

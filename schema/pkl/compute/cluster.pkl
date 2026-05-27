@@ -8,7 +8,7 @@ module databricks.compute.cluster
 import "@formae/formae.pkl"
 import "../databricks.pkl"
 
-const type = "Databricks::Compute::Cluster"
+const type = "DATABRICKS::Compute::Cluster"
 
 open class ClusterResolvable extends formae.Resolvable {
     hidden type = module.type

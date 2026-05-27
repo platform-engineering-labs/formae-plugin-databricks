@@ -39,8 +39,8 @@ func (p *Plugin) LabelConfig() pkgmodel.LabelConfig {
 	return pkgmodel.LabelConfig{
 		DefaultQuery: "$.clusterName",
 		ResourceOverrides: map[string]string{
-			"Databricks::Compute::InstancePool": "$.instancePoolName",
-			"Databricks::Jobs::Job":             "$.name",
+			"DATABRICKS::Compute::InstancePool": "$.instancePoolName",
+			"DATABRICKS::Jobs::Job":             "$.name",
 		},
 	}
 }

@@ -8,7 +8,7 @@ module databricks.compute.instancepool
 import "@formae/formae.pkl"
 import "../databricks.pkl"
 
-const type = "Databricks::Compute::InstancePool"
+const type = "DATABRICKS::Compute::InstancePool"
 
 open class InstancePoolResolvable extends formae.Resolvable {
     hidden type = module.type

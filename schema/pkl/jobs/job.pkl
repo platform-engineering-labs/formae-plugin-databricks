@@ -8,7 +8,7 @@ module databricks.jobs.job
 import "@formae/formae.pkl"
 import "../databricks.pkl"
 
-const type = "Databricks::Jobs::Job"
+const type = "DATABRICKS::Jobs::Job"
 
 open class JobResolvable extends formae.Resolvable {
     hidden type = module.type
