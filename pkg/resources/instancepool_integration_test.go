@@ -94,12 +94,13 @@ func TestInstancePool_CreateReadDeleteLifecycle(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, resource.OperationStatusSuccess, deleteResult.ProgressResult.OperationStatus)
 
-	// Verify gone
-	_, err = prov.Read(ctx, &resource.ReadRequest{
+	// Verify gone — Read should succeed with NotFound ErrorCode (not return an error)
+	readResult, err := prov.Read(ctx, &resource.ReadRequest{
 		NativeID:     nativeID,
 		ResourceType: ResourceTypeInstancePool,
 	})
-	assert.Error(t, err)
+	require.NoError(t, err)
+	assert.Equal(t, resource.OperationErrorCodeNotFound, readResult.ErrorCode)
 }
 
 func TestInstancePool_Update(t *testing.T) {
