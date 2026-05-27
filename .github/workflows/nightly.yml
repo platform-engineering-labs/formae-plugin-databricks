@@ -178,6 +178,7 @@ jobs:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_CLIENT_ID: ${{ secrets.DATABRICKS_CLIENT_ID }}
           DATABRICKS_TOKEN_AUDIENCE: 22793048-f5a8-417b-b056-e9c4aabbb05d
+          DATABRICKS_AUTH_TYPE: github-oidc
           FORMAE_TEST_RUN_ID: nightly-main-${{ github.run_id }}-${{ matrix.resource }}
           FORMAE_TEST_OOB_DELETE_TIMEOUT: 15
           POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
@@ -204,7 +205,16 @@ jobs:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_CLIENT_ID: ${{ secrets.DATABRICKS_CLIENT_ID }}
           DATABRICKS_TOKEN_AUDIENCE: 22793048-f5a8-417b-b056-e9c4aabbb05d
-        run: ./scripts/ci/clean-environment.sh
+          DATABRICKS_AUTH_TYPE: github-oidc
+        run: |
+          # Conformance tests self-clean via t.Cleanup; this is the orphan safety net.
+          # If CLI auth fails here, surface diagnostics but don't fail the workflow.
+          if databricks current-user me >/dev/null 2>&1; then
+            ./scripts/ci/clean-environment.sh
+          else
+            echo "::warning::Databricks CLI auth failed in cleanup job; conformance tests self-clean via t.Cleanup."
+            databricks current-user me 2>&1 | head -10 || true
+          fi
 
   # Notify when nightly is fixed (was red, now green)
   notify-fixed:
