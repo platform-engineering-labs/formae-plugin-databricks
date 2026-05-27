@@ -25,6 +25,13 @@ env:
   PKL_VERSION: "0.30.0"
 
 jobs:
+  reuse-compliance:
+    name: REUSE License Compliance
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: fsfe/reuse-action@v5
+
   build:
     runs-on: ubuntu-latest
     steps:
