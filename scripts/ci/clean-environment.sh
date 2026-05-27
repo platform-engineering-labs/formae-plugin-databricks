@@ -18,31 +18,35 @@ if ! command -v databricks &>/dev/null; then
     exit 0
 fi
 
+# NOTE: Databricks CLI v1.x returns bare arrays from `<resource> list --output json`
+# (e.g. `[ {...}, ... ]`). v0.x used to wrap them as `{<resource>: [...]}`. The jq
+# paths below target the v1.x bare-array shape (`.[]?` instead of `.<resource>[]?`).
+
 # Delete jobs matching prefix
 echo "  Cleaning jobs..."
-databricks jobs list --output json 2>/dev/null | \
-    jq -r --arg prefix "$TEST_PREFIX" '.jobs[]? | select(.settings.name | startswith($prefix)) | .job_id' 2>/dev/null | \
+databricks jobs list --output json | \
+    jq -r --arg prefix "$TEST_PREFIX" '.[]? | select(.settings.name | startswith($prefix)) | .job_id' | \
     while read -r job_id; do
         echo "    Deleting job $job_id"
-        databricks jobs delete "$job_id" 2>/dev/null || true
+        databricks jobs delete "$job_id" || true
     done
 
 # Delete clusters matching prefix
 echo "  Cleaning clusters..."
-databricks clusters list --output json 2>/dev/null | \
-    jq -r --arg prefix "$TEST_PREFIX" '.clusters[]? | select(.cluster_name | startswith($prefix)) | .cluster_id' 2>/dev/null | \
+databricks clusters list --output json | \
+    jq -r --arg prefix "$TEST_PREFIX" '.[]? | select(.cluster_name | startswith($prefix)) | .cluster_id' | \
     while read -r cluster_id; do
         echo "    Deleting cluster $cluster_id"
-        databricks clusters permanent-delete "$cluster_id" 2>/dev/null || true
+        databricks clusters permanent-delete "$cluster_id" || true
     done
 
 # Delete instance pools matching prefix
 echo "  Cleaning instance pools..."
-databricks instance-pools list --output json 2>/dev/null | \
-    jq -r --arg prefix "$TEST_PREFIX" '.instance_pools[]? | select(.instance_pool_name | startswith($prefix)) | .instance_pool_id' 2>/dev/null | \
+databricks instance-pools list --output json | \
+    jq -r --arg prefix "$TEST_PREFIX" '.[]? | select(.instance_pool_name | startswith($prefix)) | .instance_pool_id' | \
     while read -r pool_id; do
         echo "    Deleting instance pool $pool_id"
-        databricks instance-pools delete "$pool_id" 2>/dev/null || true
+        databricks instance-pools delete "$pool_id" || true
     done
 
 echo "clean-environment.sh: Cleanup complete"
