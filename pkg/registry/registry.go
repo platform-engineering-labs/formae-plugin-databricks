@@ -21,13 +21,15 @@ func Register(resourceType string, factory ProvisionerFactory) {
 	registry[resourceType] = factory
 }
 
-// Get returns a Provisioner instance for the given resource type.
+// Get returns a Provisioner instance for the given resource type, wrapped with
+// the shared readAfterWrite decorator so successful sync Creates/Updates always
+// surface the complete property set from the API.
 func Get(resourceType string, client *client.Client, cfg *config.Config) prov.Provisioner {
 	factory, ok := registry[resourceType]
 	if !ok {
 		return nil
 	}
-	return factory(client, cfg)
+	return prov.WithReadAfterWrite(factory(client, cfg))
 }
 
 // HasProvisioner returns true if a provisioner is registered for the given resource type.
