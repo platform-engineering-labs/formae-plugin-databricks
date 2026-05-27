@@ -178,6 +178,7 @@ jobs:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_CLIENT_ID: ${{ secrets.DATABRICKS_CLIENT_ID }}
           DATABRICKS_TOKEN_AUDIENCE: 22793048-f5a8-417b-b056-e9c4aabbb05d
+          DATABRICKS_AUTH_TYPE: github-oidc
           FORMAE_TEST_RUN_ID: nightly-main-${{ github.run_id }}-${{ matrix.resource }}
           FORMAE_TEST_OOB_DELETE_TIMEOUT: 15
           POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
@@ -199,12 +200,24 @@ jobs:
       - name: Install Databricks CLI
         run: curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
 
-      - name: Clean up test resources
+      - name: Clean up test resources (best-effort)
+        continue-on-error: true
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_CLIENT_ID: ${{ secrets.DATABRICKS_CLIENT_ID }}
           DATABRICKS_TOKEN_AUDIENCE: 22793048-f5a8-417b-b056-e9c4aabbb05d
-        run: ./scripts/ci/clean-environment.sh
+          DATABRICKS_AUTH_TYPE: github-oidc
+        run: |
+          # Conformance tests self-clean via t.Cleanup; this job is the orphan safety net.
+          # Step is best-effort (continue-on-error) so a CLI quirk doesn't fail the workflow.
+          echo "=== auth probe ==="
+          databricks current-user me 2>&1 | head -5 || true
+          echo ""
+          echo "=== jobs list probe (no 2>/dev/null) ==="
+          databricks jobs list --output json 2>&1 | head -10 || true
+          echo ""
+          echo "=== running clean-environment.sh ==="
+          ./scripts/ci/clean-environment.sh
 
   # Notify when nightly is fixed (was red, now green)
   notify-fixed:
