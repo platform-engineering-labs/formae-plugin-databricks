@@ -75,12 +75,12 @@ func TestJob_CreateReadDeleteLifecycle(t *testing.T) {
 	assert.Equal(t, resource.OperationStatusSuccess, deleteResult.ProgressResult.OperationStatus)
 
 	// Verify gone — Read should succeed with NotFound ErrorCode (not return an error)
-	readResult, err := prov.Read(ctx, &resource.ReadRequest{
+	goneResult, err := prov.Read(ctx, &resource.ReadRequest{
 		NativeID:     nativeID,
 		ResourceType: ResourceTypeJob,
 	})
 	require.NoError(t, err)
-	assert.Equal(t, resource.OperationErrorCodeNotFound, readResult.ErrorCode)
+	assert.Equal(t, resource.OperationErrorCodeNotFound, goneResult.ErrorCode)
 }
 
 func TestJob_Update(t *testing.T) {
