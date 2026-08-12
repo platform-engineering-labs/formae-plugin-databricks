@@ -11,7 +11,7 @@ summary = "Databricks workspace resource plugin"
 description = "Databricks workspace resource plugin for Formae"
 category = "data"
 license = "FSL-1.1-ALv2"
-minFormaeVersion = "0.84.0"
+minFormaeVersion = "0.89.0"
 
 output {
   renderer = new JsonRenderer {}

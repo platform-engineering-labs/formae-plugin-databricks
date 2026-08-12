@@ -14,11 +14,25 @@ import "@formae/formae.pkl"
 open class Config {
   hidden fixed type: String = "Databricks"
   hidden host: String
-  hidden token: String?
+
+  /// The personal access token. Accepts a literal string or a resolvable (e.g.
+  /// sourced from a formae-managed secret, which the agent resolves live on
+  /// every call, so rotating it needs no agent restart).
+  ///
+  /// Omit it to authenticate through the Databricks SDK credential chain (CLI
+  /// profile, Azure CLI, OAuth), which is the deliberate way to defer. A token
+  /// that is declared but resolves to an empty value is an error rather than a
+  /// silent fall back to that chain, which could authenticate as a different
+  /// identity than the one this forma names.
+  ///
+  /// Mutable: how the agent authenticates is not where the workspace lives, so
+  /// rotating the token updates the target rather than replacing it.
+  @formae.ConfigFieldHint { createOnly = false }
+  hidden token: (String|formae.Resolvable)?
 
   fixed Type: String = type
   fixed Host: String = host
-  fixed Token: String? = token
+  fixed Token: (String|formae.Resolvable)? = token
 }
 
 open class ResourceHint extends formae.ResourceHint {}
