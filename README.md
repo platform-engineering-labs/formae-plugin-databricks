@@ -58,6 +58,23 @@ export DATABRICKS_TOKEN="your-pat-token"
 exchanges a GitHub Actions OIDC token directly with Databricks. See
 `.github/workflows/ci.yml` for the configuration.
 
+**A formae-managed secret:** the `token` config field accepts a resolvable, so
+the personal access token can come from a secret that the agent resolves live
+before every call. Onboarding a workspace or rotating the token then needs no
+agent restart, and the token is stored as a reference rather than a literal:
+
+```pkl
+config = new databricks.Config {
+  host = "https://your-workspace.cloud.databricks.com"
+  token = databricksToken.res.secretValue
+}
+```
+
+Omit `token` to use the credential chain above, which stays the default. A
+token that is declared but resolves to an empty value is an error rather than a
+silent fall back to the chain, which could otherwise authenticate through a
+local CLI profile as a different identity than the one the forma names.
+
 ## Examples
 
 See the [examples/](examples/) directory for usage patterns:
