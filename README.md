@@ -1,7 +1,7 @@
 # Databricks Plugin for Formae
 
 [![CI](https://github.com/platform-engineering-labs/formae-plugin-databricks/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/platform-engineering-labs/formae-plugin-databricks/actions/workflows/ci.yml)
-[![Nightly](https://github.com/platform-engineering-labs/formae-plugin-databricks/actions/workflows/nightly.yml/badge.svg?branch=main)](https://github.com/platform-engineering-labs/formae-plugin-databricks/actions/workflows/nightly.yml)
+[![Monthly](https://github.com/platform-engineering-labs/formae-plugin-databricks/actions/workflows/monthly.yml/badge.svg?branch=main)](https://github.com/platform-engineering-labs/formae-plugin-databricks/actions/workflows/monthly.yml)
 
 Formae plugin for managing Databricks workspace resources.
 
